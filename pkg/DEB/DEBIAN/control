@@ -1,0 +1,8 @@
+Package: voxl-tracking
+Version: 0.1
+Section: base
+Priority: optional
+Architecture: arm64
+Depends: libmodal-pipe,libmodal-json, voxl-opencv, qrb5165-tflite(>=2.8.0) | apq8096-tflite(>=2.8.0)
+Maintainer: modalai.com
+Description: client of voxl-tflite-server that does tracking
