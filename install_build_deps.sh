@@ -120,6 +120,43 @@ else
 
 fi
 
+sudo apt install -y libzmq3-dev:arm64 libprotobuf-dev:arm64 protobuf-compiler
+
+#TOOLCHAIN_QRB5165="/opt/cross_toolchain/aarch64-gnu-7.toolchain.cmake"
+#
+#if [ ! -d "libzmq" ]; then
+#	git clone https://github.com/zeromq/libzmq.git && \
+#	cd libzmq && \
+#	mkdir -p build && \
+#	cd build && \
+#	cmake -DCMAKE_TOOLCHAIN_FILE=${TOOLCHAIN_QRB5165} .. && \
+#	cd ../..
+#fi
+#
+#if [ ! -d "cppzmq" ]; then
+#	git clone https://github.com/zeromq/cppzmq.git && \
+#	cd cppzmq && \
+#	mkdir -p build && \
+#	cd build && \
+#	cmake -DCMAKE_TOOLCHAIN_FILE=${TOOLCHAIN_QRB5165} .. && \
+#	cd ../..
+#fi
+
+apt-get install g++ git #bazel
+
+#wget https://github.com/bazelbuild/bazelisk/releases/download/v1.22.0/bazelisk-amd64.deb
+#dpkg -i bazelisk-amd64.deb
+
+#update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-8 20
+#rm -rf protobuf
+#git clone --recursive --branch v28.2 --single-branch https://github.com/protocolbuffers/protobuf.git
+#cd protobuf
+#cmake . -Dprotobuf_BUILD_TESTS=OFF -DCMAKE_CXX_STANDARD=14 #-DCMAKE_TOOLCHAIN_FILE=${TOOLCHAIN_QRB5165}
+#cmake --build .
+#make install
+# bazel build :protoc :protobuf
+# cp bazel-bin/protoc /usr/local/bin
+
 echo ""
 echo "Done installing dependencies"
 echo ""

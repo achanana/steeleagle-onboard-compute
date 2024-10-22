@@ -6,11 +6,7 @@
 
 using namespace std;
 
-static const string kProcessName = "voxl-tracking";
-
-class TrackingAlgorithm {
-
-};
+static const string kProcessName = "steeleagle-os-onboard-compute";
 
 static void tflite_server_connect_cb(int ch, void *context)
 {
@@ -19,7 +15,7 @@ static void tflite_server_connect_cb(int ch, void *context)
 
 static void tflite_server_disconnect_cb(int ch, void *context)
 {
-    fprintf(stderr, "Disonnected from tflite server\n");
+    fprintf(stderr, "Disconnected from tflite server\n");
 }
 
 static void tflite_server_cb(int ch, char *data, int bytes, void *context)
@@ -30,7 +26,7 @@ static void tflite_server_cb(int ch, char *data, int bytes, void *context)
     }
 }
 
-int main()
+int run_object_detection_loop()
 {
     int ch = pipe_client_get_next_available_channel();
     const string &input_pipe = "/run/mpa/tflite_data";
@@ -50,4 +46,6 @@ int main()
     while (main_running) {
       usleep(5000000);
     }
+
+    return 0;
 }

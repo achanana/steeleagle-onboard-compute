@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.3)
 
-SET(TARGET voxl-tracking)
+SET(TARGET steeleagle-os-onboard-compute)
 
 option(BUILD_QRB5165 "Build the qrb5165 binary" OFF)
 
@@ -10,6 +10,8 @@ endif()
 
 # Enable compile optimizations
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -fsee -fomit-frame-pointer -fno-signed-zeros -fno-math-errno -funroll-loops")
+
+set(CMAKE_PREFIX_PATH "/usr/local")
 
 # Enable debug flags (use if you want to debug in gdb)
 # set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g3 -Wall -Wuninitialized -Wmaybe-uninitialized -fno-omit-frame-pointer")
@@ -30,9 +32,11 @@ include_directories(
     # /usr/include/tensorflow/lite/tools/make/downloads/flatbuffers/include/
 
     # qrb5165 SPECIFIC
-    /usr/include/flatbuffers/include/
-    /usr/include/abseil-cpp/
-    /usr/include/ruy/
+    #/usr/include/flatbuffers/include/
+    #/usr/include/abseil-cpp/
+    #/usr/include/ruy/
+    #/usr/include/google/
+    /usr/include/
 )
 
 set(ABSL_LIBS
@@ -143,6 +147,8 @@ set(LINK_LIBS
     "EGL_adreno"
     "GLESv2_adreno"
     "rt"
+    "zmq"
+    "protobuf"
 )
 
 if (BUILD_QRB5165)
