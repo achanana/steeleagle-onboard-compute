@@ -1,9 +1,9 @@
 #include <iostream>
 
-#include "zeromq_endpoint.h"
+#include "onboard_compute_engine.h"
 #include "zhelpers.hpp"
 #include "gabriel.pb.h"
-#include "ai_detection.pb.h"
+#include "onboard_compute.pb.h"
 
 #include <modal_pipe_client.h>
 #include <modal_pipe_server.h>
@@ -21,8 +21,6 @@
 //-----------------------------------------------------------------------------
 
 using namespace std;
-using namespace std::placeholders;
-using namespace gabriel;
 using namespace steeleagle;
 
 //-----------------------------------------------------------------------------
@@ -53,12 +51,14 @@ void ComputeEngine::SendResult(const vector<ai_detection_t>& detections) {
     }
 
     // Send results to client
+    cout << "Sending results to client" << endl;
     string serialized_msg;
     compute_result.SerializeToString(&serialized_msg);
-    zmq::message_t reply(serialized_msg.size());
-    memcpy(reply.data(), serialized_msg.data(), serialized_msg.size());
+    s_send(socket, serialized_msg);
+    // zmq::message_t reply(serialized_msg.size());
+    //memcpy(reply.data(), serialized_msg.data(), serialized_msg.size());
 
-    socket.send(reply);
+    //socket.send(reply);
 }
 
 //-----------------------------------------------------------------------------
@@ -78,24 +78,24 @@ void ComputeEngine::HandleRequest() {
     // Wait for next request from client
     string client_msg = s_recv(socket);
 
-    InputFrame frame;
-    if (!frame.ParseFromString(client_msg)) {
+    ComputeRequest request;
+    if (!request.ParseFromString(client_msg)) {
         cerr << "Could not parse message from client" << endl;
     }
 
-    if (frame.payload_type() != PayloadType::IMAGE) {
-        cerr << "Incorrect payload type received from client" << endl;
-    }
-
-    if (frame.payloads_size() != 1) {
-        cerr << "Expected one frame from the client" << endl;
-    }
-
-    const string& frame_bytes = frame.payloads(0);
+    const string& frame_bytes = request.frame_data();
 
     cout << "Received frame from client successfully"<< endl;
 
-    pipe_server_write(channel, frame_bytes.c_str(), frame_bytes.length());
+    camera_image_metadata_t cam_meta;
+    cam_meta.magic_number = CAMERA_MAGIC_NUMBER;
+    cam_meta.width = request.frame_width();
+    cam_meta.height = request.frame_height();
+    cam_meta.size_bytes = frame_bytes.size();
+    cam_meta.format = IMAGE_FORMAT_YUV422;
+
+    pipe_server_write(channel, &cam_meta, sizeof(camera_image_metadata_t));
+    pipe_server_write(channel, frame_bytes.data(), frame_bytes.size());
 
     cout << "Sent frame to voxl-tflite-server" << endl;
 }
@@ -164,9 +164,6 @@ int main(int argc, char *argv[]) {
 
     while (main_running) {
         engine->HandleRequest();
-
-        // Send reply back to client
-        //s_send(responder, string("World"));
     }
 
     printf("Starting shutdown sequence\n");
@@ -188,3 +185,5 @@ static int create_pipe(int ch) {
     }
     return 0;
 }
+
+//-----------------------------------------------------------------------------
