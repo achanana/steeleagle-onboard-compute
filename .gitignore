@@ -7,3 +7,4 @@ build
 *deb
 *.pb.h
 *.pb.cc
+*swp
